@@ -4,10 +4,11 @@ import (
 	"github.com/Sirupsen/logrus"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/urfave/cli"
-	"github.com/xuyuntech/usercenter/api"
-	"github.com/xuyuntech/usercenter/manager"
-	"github.com/xuyuntech/usercenter/settings"
-	"github.com/xuyuntech/usercenter/version"
+	"github.com/xuyuntech/register-visit/api"
+	"github.com/xuyuntech/register-visit/manager"
+	"github.com/xuyuntech/register-visit/settings"
+	"github.com/xuyuntech/register-visit/version"
+	"os"
 )
 
 var flags = []cli.Flag{
@@ -26,7 +27,7 @@ var flags = []cli.Flag{
 func main() {
 	app := cli.NewApp()
 	app.Flags = flags
-	app.Name = "虚云科技大用户中心"
+	app.Name = "虚云科技挂号后台"
 	app.Version = version.Version.String()
 	app.Before = func(c *cli.Context) error {
 		if c.Bool("debug") {
@@ -37,6 +38,10 @@ func main() {
 		return nil
 	}
 	app.Action = action
+
+	if err := app.Run(os.Args); err != nil {
+		logrus.Fatal(err)
+	}
 }
 
 func action(c *cli.Context) error {

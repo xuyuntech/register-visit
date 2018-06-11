@@ -3,7 +3,7 @@ package api
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/xuyuntech/usercenter/manager"
+	"github.com/xuyuntech/register-visit/manager"
 	"time"
 )
 

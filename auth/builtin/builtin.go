@@ -1,7 +1,7 @@
 package builtin
 
 import (
-	"github.com/xuyuntech/usercenter/auth"
+	"github.com/xuyuntech/register-visit/auth"
 	"golang.org/x/crypto/bcrypt"
 )
 
