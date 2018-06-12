@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/Sirupsen/logrus"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/urfave/cli"
@@ -8,7 +10,6 @@ import (
 	"github.com/xuyuntech/register-visit/manager"
 	"github.com/xuyuntech/register-visit/settings"
 	"github.com/xuyuntech/register-visit/version"
-	"os"
 )
 
 var flags = []cli.Flag{
@@ -21,6 +22,11 @@ var flags = []cli.Flag{
 		EnvVar: "LISTEN",
 		Name:   "listen, l",
 		Usage:  "http listen address",
+	},
+	cli.StringFlag{
+		EnvVar: "DATABASE_DATASOURCE",
+		Name:   "database-datasource, ds",
+		Usage:  "DATABASE_DATASOURCE",
 	},
 }
 
@@ -47,8 +53,10 @@ func main() {
 func action(c *cli.Context) error {
 	settings.InitSettings(c)
 
-	controllerManager := manager.NewManager()
-
+	controllerManager, err := manager.NewManager(c)
+	if err != nil {
+		return err
+	}
 	server := &api.Api{
 		Listen:  c.String("listen"),
 		Manager: controllerManager,

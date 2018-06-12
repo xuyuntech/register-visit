@@ -2,9 +2,12 @@ package model
 
 import (
 	"fmt"
+
 	log "github.com/Sirupsen/logrus"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/core"
 	"github.com/go-xorm/xorm"
+	"github.com/robfig/cron"
 )
 
 func NewEngine(ds string, t []interface{}) (*xorm.Engine, error) {
