@@ -24,6 +24,13 @@ func (a *Api) Run() error {
 		AllowAllOrigins:  true,
 		MaxAge:           12 * time.Hour,
 	}))
+	dev := r.Group("/dev")
+	{
+		chain := dev.Group("/chain")
+		chain.GET("/setupChannel", a.chainSetupChannel)
+		chain.GET("/installAndInstantiateCC", a.installAndInstantiateCC)
+		chain.POST("/query", a.chainQuery)
+	}
 	r.GET("/test", a.test)
 	return r.Run(a.Listen)
 }

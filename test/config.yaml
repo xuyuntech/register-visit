@@ -1,0 +1,94 @@
+name: "register-visit-network"
+
+version: 2
+
+client:
+  organization: Org1
+  logging:
+    level: info
+
+  peer:
+    timeout:
+      connection: 3s
+      queryResponse: 45s
+      executeTxResponse: 30s
+  eventService:
+    connection: 3s
+    registrationResponse: 3s
+  orderer:
+    timeout:
+      connection: 3s
+      response: 5s
+
+  cryptoconfig:
+    path: "${GOPATH}/src/github.com/xuyuntech/fabric-samples/basic-network/crypto-config"
+
+  # Some SDKs support pluggable KV stores, the properties under "credentialStore" are implementation specific
+  credentialStore:
+    path: "/tmp/register-visit-kvs"
+
+  # [Optional]. Specific to the CryptoSuite implementation used by GO SDK. Software-based implementations requiring a key store. PKCS#11 based implementations does not.
+  cryptoStore:
+    path: "/tmp/register-visit-msp"
+  # BCCSP config for the client. Used by GO SDK. It's the Blockchain Cryptographic Service Provider.
+  # It offers the implementation of cryptographic standards and algorithms.
+  BCCSP:
+    security:
+     enabled: true
+     default:
+      provider: "SW"
+     hashAlgorithm: "SHA2"
+     softVerify: true
+     ephemeral: false
+     level: 256
+
+  tlsCerts:
+    systemCertPool: false
+
+# List of participating organizations in this network
+organizations:
+  Org1:
+    mspid: Org1MSP
+    cryptoPath: "peerOrganizations/org1.example.com/users/{userName}@org1.example.com/msp"
+    peers:
+      - peer0.org1.example.com
+    certificateAuthorities:
+      - ca.example.com
+
+# List of orderers to send transaction and channel create/update requests to.
+# The orderers consent on the order of transactions in a block to be committed to the ledger. For the time being only one orderer is needed.
+orderers:
+  orderer.example.com:
+    url: grpcs://localhost:7050
+    grpcOptions:
+      ssl-target-name-override: orderer.example.com
+      grpc-max-send-message-length: 15
+    tlsCACerts:
+      path: "${GOPATH}/src/github.com/xuyuntech/fabric-samples/basic-network/crypto-config/ordererOrganizations/example.com/tlsca/tlsca.example.com-cert.pem"
+
+# List of peers to send various requests to, including endorsement, query and event listener registration.
+peers:
+  peer0.org1.example.com:
+    # this URL is used to send endorsement and query requests
+    url: grpcs://localhost:7051
+    # this URL is used to connect the EventHub and registering event listeners
+    eventUrl: grpcs://localhost:7053
+    # These parameters should be set in coordination with the keepalive policy on the server
+    grpcOptions:
+      ssl-target-name-override: peer0.org1.example.com
+      grpc.http2.keepalive_time: 15
+
+    tlsCACerts:
+      path: "${GOPATH}/src/github.com/xuyuntech/fabric-samples/basic-network/crypto-config/peerOrganizations/org1.example.com/tlsca/tlsca.org1.example.com-cert.pem"
+
+# Fabric-CA is a special kind of Certificate Authority provided by Hyperledger Fabric which allows certificate management to be done via REST APIs.
+certificateAuthorities:
+  ca.example.com:
+    url: https://localhost:7054
+    # the properties specified under this object are passed to the 'http' client verbatim when making the request to the Fabric-CA server
+    httpOptions:
+      verify: false
+    registrar:
+      enrollId: admin
+      enrollSecret: adminpw
+    caName: ca.example.com
